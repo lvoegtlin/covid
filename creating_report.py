@@ -41,52 +41,6 @@ def plotCases(dataframe, column, country):
     plt.figure(figsize=(10, 5))
     plt.plot(x, y, 'ko', label="Original Data")
 
-    try:
-        lpopt, lpcov = curve_fit(logistic, x, y, maxfev=10000)
-        lerror = np.sqrt(np.diag(lpcov))
-
-        # for logistic curve at half maximum, slope = growth rate/2. so doubling time = ln(2) / (growth rate/2)
-        ldoubletime = np.log(2) / (lpopt[1] / 2)
-        # standard error
-        ldoubletimeerror = 1.96 * ldoubletime * np.abs(lerror[1] / lpopt[1])
-
-        # calculate R^2
-        residuals = y - logistic(x, *lpopt)
-        ss_res = np.sum(residuals ** 2)
-        ss_tot = np.sum((y - np.mean(y)) ** 2)
-        logisticr2 = 1 - (ss_res / ss_tot)
-
-    except:
-        pass
-
-    try:
-        epopt, epcov = curve_fit(exponential, x, y, bounds=([0, 0, -100], [100, 0.9, 100]), maxfev=10000)
-        eerror = np.sqrt(np.diag(epcov))
-
-        # for exponential curve, slope = growth rate. so doubling time = ln(2) / growth rate
-        edoubletime = np.log(2) / epopt[1]
-        # standard error
-        edoubletimeerror = 1.96 * edoubletime * np.abs(eerror[1] / epopt[1])
-
-        # calculate R^2
-        residuals = y - exponential(x, *epopt)
-        ss_res = np.sum(residuals ** 2)
-        ss_tot = np.sum((y - np.mean(y)) ** 2)
-        expr2 = 1 - (ss_res / ss_tot)
-
-    except:
-        pass
-
-    create_markdown_report(x, y, co, country, logisticr2, expr2, lpopt, ldoubletime, ldoubletimeerror, epopt, edoubletime, edoubletimeerror)
-
-    plt.xlabel('Days', fontsize="x-large")
-    plt.ylabel('Total Cases', fontsize="x-large")
-    plt.legend(fontsize="x-large")
-    plt.savefig(os.path.join('docs', 'images',
-                             'figure_' + country + '.png'))
-
-
-def create_markdown_report(x, y, co, country, logisticr2, expr2, lpopt, ldoubletime, ldoubletimeerror, epopt, edoubletime, edoubletimeerror):
     current = y[-1]
     lastweek = y[-8]
     two_weeks_ago = y[-15]
@@ -112,7 +66,23 @@ def create_markdown_report(x, y, co, country, logisticr2, expr2, lpopt, ldoublet
         recentdbltime = round(7 * np.log(2) / np.log(ratio), 1)
         content.append(f'\tDoubling Time [last-current] (represents recent growth): {recentdbltime} days\n')
         recentdbltime_two_weeks = round(7 * np.log(2) / np.log(two_weeks_ratio), 1)
-        content.append(f'\tDoubling Time [2_weeks_ago-last] (represents recent growth): {recentdbltime_two_weeks} days\n')
+        content.append(
+            f'\tDoubling Time [2_weeks_ago-last] (represents recent growth): {recentdbltime_two_weeks} days\n')
+
+    try:
+        lpopt, lpcov = curve_fit(logistic, x, y, maxfev=10000)
+        lerror = np.sqrt(np.diag(lpcov))
+
+        # for logistic curve at half maximum, slope = growth rate/2. so doubling time = ln(2) / (growth rate/2)
+        ldoubletime = np.log(2) / (lpopt[1] / 2)
+        # standard error
+        ldoubletimeerror = 1.96 * ldoubletime * np.abs(lerror[1] / lpopt[1])
+
+        # calculate R^2
+        residuals = y - logistic(x, *lpopt)
+        ss_res = np.sum(residuals ** 2)
+        ss_tot = np.sum((y - np.mean(y)) ** 2)
+        logisticr2 = 1 - (ss_res / ss_tot)
 
         if logisticr2 > 0.8:
             content.append('\n')
@@ -123,6 +93,24 @@ def create_markdown_report(x, y, co, country, logisticr2, expr2, lpopt, ldoublet
             content.append(f'\tDoubling Time (during middle of growth): '
                            f'{round(ldoubletime, 2)} (± {round(ldoubletimeerror, 2)}) days\n')
 
+    except:
+        pass
+
+    try:
+        epopt, epcov = curve_fit(exponential, x, y, bounds=([0, 0, -100], [100, 0.9, 100]), maxfev=10000)
+        eerror = np.sqrt(np.diag(epcov))
+
+        # for exponential curve, slope = growth rate. so doubling time = ln(2) / growth rate
+        edoubletime = np.log(2) / epopt[1]
+        # standard error
+        edoubletimeerror = 1.96 * edoubletime * np.abs(eerror[1] / epopt[1])
+
+        # calculate R^2
+        residuals = y - exponential(x, *epopt)
+        ss_res = np.sum(residuals ** 2)
+        ss_tot = np.sum((y - np.mean(y)) ** 2)
+        expr2 = 1 - (ss_res / ss_tot)
+
         if expr2 > 0.8:
             content.append("\n")
             plt.plot(x, exponential(x, *epopt), 'r--', label="Exponential Curve Fit")
@@ -131,15 +119,25 @@ def create_markdown_report(x, y, co, country, logisticr2, expr2, lpopt, ldoublet
             content.append(f'\tR^2: {expr2}\n')
             content.append(f'\tDoubling Time (represents overall growth): '
                            f'{round(edoubletime, 2)} (± {round(edoubletimeerror, 2)} ) days\n')
+
+    except:
+        pass
+
     # write with pillo a image with write background
     img = Image.new('RGB', (450, 380), color=(255, 255, 255))
     d = ImageDraw.Draw(img)
     for i, l in enumerate(content):
-        d.text((10, 15*(i+1)), l, fill=(0, 0, 0))
+        d.text((10, 15 * (i + 1)), l, fill=(0, 0, 0))
     img.save(os.path.join('docs', 'reports', 'report_' + country + '.png'))
+
+    plt.xlabel('Days', fontsize="x-large")
+    plt.ylabel('Total Cases', fontsize="x-large")
+    plt.legend(fontsize="x-large")
+    plt.savefig(os.path.join('docs', 'images',
+                             'figure_' + country + '.png'))
 
 
 if __name__ == '__main__':
-    countries = ['Switzerland', 'Germany', None]
+    countries = ['Switzerland', 'Germany', 'US', None]
     for c in countries:
         plotCases(df, 'Country/Region', c)

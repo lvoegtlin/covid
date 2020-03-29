@@ -18,8 +18,13 @@ Original code from https://github.com/aatishb/covid
 ![Switzerland figure](reports/report_Switzerland.png)
 
 # Germany
-![Germanz figure](images/figure_Germany.png)
-![Germanz figure](reports/report_Germany.png)
+![Germany figure](images/figure_Germany.png)
+![Germany figure](reports/report_Germany.png)
+
+
+# US
+![US figure](images/figure_US.png)
+![US figure](reports/report_US.png)
 
 # World Wide
 ![World Wide figure](images/figure_WorldWide.png)
