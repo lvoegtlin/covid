@@ -7,5 +7,5 @@ mv curvefit.ipynb curvefit.previous.ipynb
 mv curvefit.nbconvert.ipynb curvefit.ipynb
 
 git add *
-git commit -m 'automatic update'
+git commit -m 'automatic update $(date)'
 git push
