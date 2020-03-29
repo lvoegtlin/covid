@@ -1,10 +1,16 @@
 # Tracking the Growth of COVID-19 Cases in Switzerland
 
+## Additional notes
 Original code from https://github.com/aatishb/covid
 
 ![Updater](https://github.com/lvoegtlin/covid/workflows/Updater/badge.svg)
 
-**Note: We are currently experiencing some issues with a change in the data source. Please bear with me while I get this back up to date soon.**
+The data for Switzerland are pulled from [daenuprobst repo](https://github.com/daenuprobst/covid19-cases-switzerland).
+
+To see the figures follow [this link](https://github.com/aatishb/covid/blob/master/curvefit.ipynb) and scroll to the bottom of the page.
+
+
+## Original Readme
 
 The purpose of [this notebook](https://github.com/aatishb/covid/blob/master/curvefit.ipynb) is to infer the rate at which confirmed cases of COVID-19 are growing (or were growing) in various countries.
 
