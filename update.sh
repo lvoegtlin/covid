@@ -6,8 +6,8 @@ jupyter nbconvert --to notebook --execute curvefit.ipynb
 mv curvefit.ipynb curvefit.previous.ipynb
 mv curvefit.nbconvert.ipynb curvefit.ipynb
 
-msg="automatic update"$(date "+%D")
+msg="automatic_update"$(date "+%D")
 
 git add *
-git commit -m '${msg}'
+git commit -m ${msg}
 #git push
