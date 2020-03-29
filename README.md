@@ -7,7 +7,7 @@ Original code from https://github.com/aatishb/covid
 
 The data for Switzerland are pulled from [daenuprobst repo](https://github.com/daenuprobst/covid19-cases-switzerland).
 
-To see the figures follow [this link](https://github.com/aatishb/covid/blob/master/curvefit.ipynb) and scroll to the bottom of the page.
+To see the figures follow [this link](https://github.com/lvoegtlin/covid/blob/master/curvefit.ipynb) and scroll to the bottom of the page.
 
 
 ## Original Readme
