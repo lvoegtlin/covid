@@ -5,7 +5,7 @@ on:
     - cron:  '5 * * * *'
 
 jobs:
-  run_scraper:
+  run_updater:
 
     runs-on: ubuntu-latest
     strategy:
