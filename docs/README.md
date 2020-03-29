@@ -14,7 +14,13 @@ The data for Switzerland are pulled from [daenuprobst repo](https://github.com/d
 Original code from https://github.com/aatishb/covid
 
 # Switzerland
+![Switzerland figure](images/figure_Switzerland.png)
+![Switzerland figure](reports/report_Switzerland.png)
 
 # Germany
+![Germanz figure](images/figure_Germany.png)
+![Germanz figure](reports/report_Germany.png)
 
 # World Wide
+![World Wide figure](images/figure_WorldWide.png)
+![World Wide figure](reports/report_WorldWide.png)
