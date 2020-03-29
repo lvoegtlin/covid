@@ -1,4 +1,8 @@
-# Tracking the Growth of COVID-19 Cases
+# Tracking the Growth of COVID-19 Cases in Switzerland
+
+Original code from https://github.com/aatishb/covid
+
+![Updater](https://github.com/lvoegtlin/covid/workflows/Updater/badge.svg)
 
 **Note: We are currently experiencing some issues with a change in the data source. Please bear with me while I get this back up to date soon.**
 
