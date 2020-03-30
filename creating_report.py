@@ -135,13 +135,17 @@ def plotCases(dataframe, column, c):
     d = ImageDraw.Draw(img)
     for i, l in enumerate(content):
         d.text((10, 15 * (i + 1)), l, fill=(0, 0, 0))
-    img.save(os.path.join('docs', 'reports', 'report_' + country + '.png'))
+    img.save(os.path.join('website', 'reports', 'report_' + country + '.png'))
+
+    # write report to HTML
+    report = open(os.path.join('website', 'reports', 'report_' + country + '.html'), "w+")
+    report.write("<br/>".join(content))
+    report.close()
 
     plt.xlabel('Days', fontsize="x-large")
     plt.ylabel('Total Cases', fontsize="x-large")
     plt.legend(fontsize="x-large")
-    plt.savefig(os.path.join('docs', 'images',
-                             'figure_' + country + '.png'))
+    plt.savefig(os.path.join('website', 'images', 'figure_' + country + '.png'))
 
 
 if __name__ == '__main__':

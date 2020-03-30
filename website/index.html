@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Tracking Coronavirus growth in Switzerland, Germany, the US and world wide and compare it against exponential and logistic growth">
+        <meta name="author" content="Lars Voegtlin, Salim Hermidas">
+        <meta name="generator" content="Jekyll v3.8.6">
+        <title>Tracking Coronavirus growth in Switzerland</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/covid.css">
+        <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+        <link rel="manifest" href="icons/site.webmanifest">
+    </head>
+    <body>
+        <div class="page-header mb-5">
+            <h1 class="project-name">covid</h1>
+            <h2 class="project-tagline">Tracking Coronavirus growth in Switzerland, Germany, the US and world wide and compare it against exponential and logistic growth </h2>
+            <a href="https://github.com/lvoegtlin/covid" class="btn btn-outline-dark">View on GitHub</a>
+        </div>
+        <main role="main">
+            <div class="container">
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h1 id="intro">Tracking the Growth of COVID-19 Cases in Switzerland, Germany and World Wide</h1>
+                        <p>The purpose of page is to infer the rate at which confirmed cases of COVID-19 are growing (or were growing) in various countries.</p>
+                        <p>The notebook pulls data from the John Hopkins <a href="https://github.com/CSSEGISandData/COVID-19">Data Repository</a> of global Coronavirus COVID-19 cases, and then does the following things:</p>
+                        <ul>
+                            <li>List total number of confirmed cases (in countries with at least 100 cases)</li>
+                            <li>Attempt to fit the time series of confirmed cases in these countries to both an exponential and a logistic function</li>
+                            <li>Use these curve fits to infer doubling times (i.e., time for the number of confirmed cases to double)</li>
+                            <li>If the curve fit was successful, summarize doubling times for each country</li>
+                        </ul>
+                        <p>The data for Switzerland are pulled from <a href="https://github.com/daenuprobst/covid19-cases-switzerland">daenuprobst repo</a>.</p>
+                        <p>Original code from https://github.com/aatishb/covid</p>
+                        <p>The starting point of the figure is the first day where the prevalence &gt; 0.05 per 10’000 inhabitants.</p>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h1 id="switzerland">Switzerland</h1>
+                        <img src="images/figure_Switzerland.png" alt="Switzerland figure">
+                        <div class="into-content info-Switzerland"></div>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h1 id="germany">Germany</h1>
+                        <img src="images/figure_Germany.png" alt="Germany figure">
+                        <div class="into-content info-Germany"></div>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h1 id="us">US</h1>
+                        <img src="images/figure_US.png" alt="US figure">
+                        <div class="into-content info-US"></div>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h1 id="world-wide">World Wide</h1>
+                        <img src="images/figure_WorldWide.png" alt="World Wide figure">
+                        <div class="into-content info-WorldWide"></div>
+                    </div>
+                </div>
+                <hr/>
+            </div>
+            <!-- FOOTER -->
+            <footer class="container mb-3">
+                <span class="site-footer-owner">
+                    <a target="_blank" href="https://github.com/lvoegtlin/covid">covid</a> is maintained by <a target="_blank" href="https://github.com/lvoegtlin">lvoegtlin</a>.
+                </span>
+            </footer>
+        </main>
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="/docs/4.4/dist/js/bootstrap.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script>
+    </body>
+</html>

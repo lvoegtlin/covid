@@ -2,6 +2,7 @@
 # run daily to update covid stats
 
 python creating_report.py
+exit 0
 
 msg="automatic_update"$(date "+%D")
 
