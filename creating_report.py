@@ -9,6 +9,8 @@ from PIL import Image, ImageDraw
 from scipy.optimize import curve_fit
 
 df = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
+relevance = 0.1
+R2_limit = 0.5
 
 
 def logistic(t, a, b, c, d):
@@ -19,7 +21,10 @@ def exponential(t, a, b, c):
     return a * np.exp(b * t) + c
 
 
-def plotCases(dataframe, column, country):
+def plotCases(dataframe, column, c):
+    country, inhabitants = c
+    border = relevance * (inhabitants / 10000)
+
     if country is None:
         co = dataframe.iloc[:, 4:].T.sum(axis=1)
         country = 'WorldWide'
@@ -27,9 +32,10 @@ def plotCases(dataframe, column, country):
         co = pd.read_csv(
             'https://raw.githubusercontent.com/daenuprobst/covid19-cases-switzerland/master/covid19_cases_switzerland_openzh.csv').iloc[
              :, -1]
-
     else:
         co = dataframe[dataframe[column] == country].iloc[:, 4:].T.sum(axis=1)
+    # filter that all data is > {relevance} infection per 10k
+    co = co[co >= border]
     co = pd.DataFrame(co)
     co.columns = ['Cases']
     co = co.loc[co['Cases'] > 0]
@@ -84,7 +90,7 @@ def plotCases(dataframe, column, country):
         ss_tot = np.sum((y - np.mean(y)) ** 2)
         logisticr2 = 1 - (ss_res / ss_tot)
 
-        if logisticr2 > 0.8:
+        if logisticr2 > R2_limit:
             content.append('\n')
             plt.plot(x, logistic(x, *lpopt), 'b--', label="Logistic Curve Fit")
             content.append('\n## Based on Logistic Fit\n')
@@ -92,7 +98,6 @@ def plotCases(dataframe, column, country):
             content.append(f'\tR^2:{logisticr2}\n')
             content.append(f'\tDoubling Time (during middle of growth): '
                            f'{round(ldoubletime, 2)} (± {round(ldoubletimeerror, 2)}) days\n')
-
     except:
         pass
 
@@ -111,7 +116,7 @@ def plotCases(dataframe, column, country):
         ss_tot = np.sum((y - np.mean(y)) ** 2)
         expr2 = 1 - (ss_res / ss_tot)
 
-        if expr2 > 0.8:
+        if expr2 > R2_limit:
             content.append("\n")
             plt.plot(x, exponential(x, *epopt), 'r--', label="Exponential Curve Fit")
             content.append('\n## Based on Exponential Fit \n')
@@ -138,6 +143,6 @@ def plotCases(dataframe, column, country):
 
 
 if __name__ == '__main__':
-    countries = ['Switzerland', 'Germany', 'US', None]
+    countries = [('Switzerland', 8570000), ('Germany', 82790000), ('US', 327200000), (None, 7530000000)]
     for c in countries:
         plotCases(df, 'Country/Region', c)
