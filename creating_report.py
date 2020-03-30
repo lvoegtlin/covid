@@ -23,7 +23,7 @@ def exponential(t, a, b, c):
 
 def plotCases(dataframe, column, c):
     country, inhabitants = c
-    border = relevance * (inhabitants / 10000)
+    border = int(relevance * (inhabitants / 10000))
 
     if country is None:
         co = dataframe.iloc[:, 4:].T.sum(axis=1)
@@ -54,6 +54,8 @@ def plotCases(dataframe, column, c):
     content = []
 
     if current > lastweek:
+        content.append(f"Starting point: {border} people infected")
+        content.append("")
         content.append('\n## Based on Most Recent Week of Data \n')
         content.append("")
         content.append(f'\tConfirmed cases on {co.index[-1]} \t {current}\n')
@@ -129,7 +131,7 @@ def plotCases(dataframe, column, c):
         pass
 
     # write with pillo a image with write background
-    img = Image.new('RGB', (450, 380), color=(255, 255, 255))
+    img = Image.new('RGB', (450, 400), color=(255, 255, 255))
     d = ImageDraw.Draw(img)
     for i, l in enumerate(content):
         d.text((10, 15 * (i + 1)), l, fill=(0, 0, 0))
