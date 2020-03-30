@@ -88,3 +88,9 @@ body {
 main .container h1 {
     color: #159957;
 }
+main .container h2 {
+    color: #159957;
+    margin-top: 2rem;
+    margin-bottom: 0;
+    font-size: 1.5rem;
+}

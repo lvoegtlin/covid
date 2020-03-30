@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 
-from PIL import Image, ImageDraw
 from scipy.optimize import curve_fit
 
 df = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
@@ -55,9 +54,7 @@ def plotCases(dataframe, column, c):
 
     if current > lastweek:
         content.append(f"Starting point: {border} people infected")
-        content.append("")
-        content.append('\n## Based on Most Recent Week of Data \n')
-        content.append("")
+        content.append('\n<h2>Based on Most Recent Week of Data</h2> \n')
         content.append(f'\tConfirmed cases on {co.index[-1]} \t {current}\n')
         content.append(f'\tConfirmed cases on {co.index[-8]} \t {lastweek}\n')
         content.append(f'\tConfirmed cases on {co.index[-15]} \t {two_weeks_ago}\n')
@@ -93,13 +90,11 @@ def plotCases(dataframe, column, c):
         logisticr2 = 1 - (ss_res / ss_tot)
 
         if logisticr2 > R2_limit:
-            content.append('\n')
             plt.plot(x, logistic(x, *lpopt), 'b--', label="Logistic Curve Fit")
-            content.append('\n## Based on Logistic Fit\n')
-            content.append("")
-            content.append(f'\tR^2:{logisticr2}\n')
+            content.append('<h2>Based on Logistic Fit</h2>\n')
+            content.append(f'\tR&#178;:{logisticr2}\n')
             content.append(f'\tDoubling Time (during middle of growth): '
-                           f'{round(ldoubletime, 2)} (± {round(ldoubletimeerror, 2)}) days\n')
+                           f'{round(ldoubletime, 2)} (&plusmn; {round(ldoubletimeerror, 2)}) days\n')
     except:
         pass
 
@@ -119,23 +114,14 @@ def plotCases(dataframe, column, c):
         expr2 = 1 - (ss_res / ss_tot)
 
         if expr2 > R2_limit:
-            content.append("\n")
             plt.plot(x, exponential(x, *epopt), 'r--', label="Exponential Curve Fit")
-            content.append('\n## Based on Exponential Fit \n')
-            content.append("")
-            content.append(f'\tR^2: {expr2}\n')
+            content.append('<h2>Based on Exponential Fit</h2>\n')
+            content.append(f'\tR&#178;: {expr2}\n')
             content.append(f'\tDoubling Time (represents overall growth): '
-                           f'{round(edoubletime, 2)} (± {round(edoubletimeerror, 2)} ) days\n')
+                           f'{round(edoubletime, 2)} (&plusmn; {round(edoubletimeerror, 2)} ) days\n')
 
     except:
         pass
-
-    # write with pillo a image with write background
-    img = Image.new('RGB', (450, 400), color=(255, 255, 255))
-    d = ImageDraw.Draw(img)
-    for i, l in enumerate(content):
-        d.text((10, 15 * (i + 1)), l, fill=(0, 0, 0))
-    img.save(os.path.join('website', 'reports', 'report_' + country + '.png'))
 
     # write report to HTML
     report = open(os.path.join('website', 'reports', 'report_' + country + '.html'), "w+")
