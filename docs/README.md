@@ -13,7 +13,7 @@ The data for Switzerland are pulled from [daenuprobst repo](https://github.com/d
 
 Original code from https://github.com/aatishb/covid
 
-The starting point of the figure is the first day where the prevalence > 0.1 per 10'000 inhabitants.
+The starting point of the figure is the first day where the prevalence > 0.05 per 10'000 inhabitants.
 
 
 # Switzerland
