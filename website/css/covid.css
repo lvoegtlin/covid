@@ -94,3 +94,21 @@ main .container h2 {
     margin-bottom: 0;
     font-size: 1.5rem;
 }
+
+.btn.btn-bold {
+    border-width: 2px;
+    font-weight: bold;
+}
+
+.page-header a.anchor {
+    color: #fff !important;
+    text-decoration: underline;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+main img {
+    max-width: 100%;
+}
