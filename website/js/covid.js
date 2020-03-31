@@ -107,8 +107,30 @@ function loadGraph(container, data, ) {
     chartData.addRows(data);
 
     var options = {
+        tooltip: {
+            isHtml: true
+        },
+        focusTarget: 'category',
         curveType: 'function',
-        interpolateNulls: true
+        interpolateNulls: true,
+        chartArea: {
+            width: '80%',
+            height: '80%'
+        },
+        legend: {
+            position: 'in'
+        },
+        hAxis: {
+            title: 'Days'
+        },
+        vAxis: {
+            title: 'Total Cases'
+        },
+        series: {
+            0: {color: '#000000', pointShape: 'circle', pointSize: 10, lineWidth: 0},
+            1: {color: '#0000ff', lineDashStyle: [10, 4]},
+            2: {color: '#ff0000', lineDashStyle: [10, 4]}
+        }
     };
 
     var chart = new google.visualization.LineChart(container.get(0));
