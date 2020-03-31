@@ -115,3 +115,7 @@ main img {
     right: 25px;
     display: none;
 }
+
+.country-graph {
+    min-height: 500px;
+}

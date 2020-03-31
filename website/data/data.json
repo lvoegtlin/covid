@@ -1,0 +1,36 @@
+{
+    "countries": [
+        {
+            "name": "Switzerland",
+            "key": "switzerland",
+            "graph": [
+                ["Days", "Original Data", "Logistic Curve", "Exponential Curve"],
+                ["2004", 1000, 400, 400],
+                ["2005", 1170, 460, 460],
+                ["2006", 660, 1120, 1120],
+                ["2007", 1030, 540, 540]
+            ],
+            "report": [
+                "Starting point: 42 people infected",
+                "<h2>Based on Most Recent Week of Data</h2>",
+                "Confirmed cases on 35: <b>16432.0</b>",
+                "Confirmed cases on 28 <b>10040.0</b>",
+                "Confirmed cases on 21 <b>2778.0</b>",
+                "Ratio (current/last): <b>1.64</b>",
+                "Ratio (lastweek/two_weeks_ago): <b>3.61</b>",
+                "Weekly increase (last-current): <b>63.7%</b>",
+                "Weekly increase (2_weeks_ago-last): <b>261.4%</b>",
+                "Daily increase (last-current): <b>7.3%</b> per day",
+                "Daily increase (2_weeks_ago-last): <b>20.1%</b> per day",
+                "Doubling Time [last-current] (represents recent growth): <b>9.8</b> days",
+                "Doubling Time [2_weeks_ago-last] (represents recent growth): <b>3.8</b> days",
+                "<h2>Based on Logistic Fit</h2>",
+                "R&#178;: <b>0.9980831170360398</b>",
+                "Doubling Time (during middle of growth): <b>5.55 (&plusmn; 0.5)</b> days",
+                "<h2>Based on Exponential Fit</h2>",
+                "R&#178;: <b>0.8094177590711168</b>",
+                "Doubling Time (represents overall growth): <b>3.6 (&plusmn; 1.36)</b> days"
+            ]
+        }
+    ]
+}
