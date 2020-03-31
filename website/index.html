@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Tracking Coronavirus growth in Switzerland, Germany, the US and world wide and compare it against exponential and logistic growth">
+        <meta name="author" content="Lars Voegtlin, Salim Hermidas">
+        <title>Tracking Coronavirus growth in Switzerland</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/covid.css">
+        <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+        <link rel="manifest" href="img/site.webmanifest">
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-37379785-3"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-37379785-3');
+        </script>
+    </head>
+    <body>
+        <div class="page-header mb-5">
+            <h1 class="project-name">COVID-19</h1>
+            <h2 class="project-tagline">
+                Tracking Coronavirus growth in <a class="anchor" href="#switzerland">Switzerland</a>, <a class="anchor" href="#germany">Germany</a>, the <a class="anchor" href="#us">US</a> and <a class="anchor" href="#world-wide">World Wide</a> and compare it against exponential and logistic growth
+            </h2>
+            <a href="https://github.com/lvoegtlin/covid" class="btn btn-outline-light btn-bold" target="_blank">View on GitHub</a>
+        </div>
+        <main role="main">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 id="intro">Tracking the Growth of COVID-19 cases in Switzerland, Germany and World Wide</h1>
+                        <p>The purpose of page is to infer the rate at which confirmed cases of COVID-19 are growing (or were growing) in various countries.</p>
+                        <p>The notebook pulls data from the John Hopkins <a target="_blank" href="https://github.com/CSSEGISandData/COVID-19">Data Repository</a> of global Coronavirus COVID-19 cases, and then does the following things:</p>
+                        <ul>
+                            <li>List total number of confirmed cases (in countries with at least 100 cases)</li>
+                            <li>Attempt to fit the time series of confirmed cases in these countries to both an exponential and a logistic function</li>
+                            <li>Use these curve fits to infer doubling times (i.e., time for the number of confirmed cases to double)</li>
+                            <li>If the curve fit was successful, summarize doubling times for each country</li>
+                        </ul>
+                        <p>The data for Switzerland are pulled from <a target="_blank" href="https://github.com/daenuprobst/covid19-cases-switzerland">daenuprobst repo</a>.</p>
+                        <p>Original code from <a target="_blank" href="https://github.com/aatishb/covid">aatishb repo</a></p>
+                        <p>The starting point of the figure is the first day where the prevalence &gt; 0.05 per 10’000 inhabitants.</p>
+                    </div>
+                </div>
+                <hr class="mb-4 mt-5"/>
+                <div class="row">
+                    <div class="col-12">
+                        <h1 id="switzerland">Switzerland</h1>
+                        <a target="_blank" href="images/figure_Switzerland.png">
+                            <img src="images/figure_Switzerland.png" alt="Switzerland figure">
+                        </a>
+                        <div class="report-container" data-src="report_Switzerland"></div>
+                    </div>
+                </div>
+                <hr class="mb-4 mt-5"/>
+                <div class="row">
+                    <div class="col-12">
+                        <h1 id="germany">Germany</h1>
+                        <a target="_blank" href="images/figure_Germany.png">
+                            <img src="images/figure_Germany.png" alt="Germany figure">
+                        </a>
+                        <div class="report-container" data-src="report_Germany"></div>
+                    </div>
+                </div>
+                <hr class="mb-4 mt-5"/>
+                <div class="row">
+                    <div class="col-12">
+                        <h1 id="us">US</h1>
+                        <a target="_blank" href="images/figure_US.png">
+                            <img src="images/figure_US.png" alt="US figure">
+                        </a>
+                        <div class="report-container" data-src="report_US"></div>
+                    </div>
+                </div>
+                <hr class="mb-4 mt-5"/>
+                <div class="row">
+                    <div class="col-12">
+                        <h1 id="world-wide">World Wide</h1>
+                        <a target="_blank" href="images/figure_WorldWide.png">
+                            <img src="images/figure_WorldWide.png" alt="World Wide figure">
+                        </a>
+                        <div class="report-container" data-src="report_WorldWide"></div>
+                    </div>
+                </div>
+                <hr class="mb-4 mt-5"/>
+            </div>
+            <a id="back-to-top" href="#" class="btn btn-dark back-to-top" role="button">&uarr;</a>
+            <!-- FOOTER -->
+            <footer class="container mb-5">
+                <span class="site-footer-owner">
+                    <a target="_blank" href="https://github.com/lvoegtlin/covid">covid</a> is maintained by <a target="_blank" href="https://github.com/lvoegtlin">lvoegtlin</a> (data analysis) and <a target="_blank" href="https://github.com/DKPillo">DKPillo</a> (UI).
+                </span>
+            </footer>
+        </main>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="js/covid.js"></script>
+    </body>
+</html>

@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 
-from PIL import Image, ImageDraw
 from scipy.optimize import curve_fit
 
 df = pd.read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
@@ -55,27 +54,25 @@ def plotCases(dataframe, column, c):
 
     if current > lastweek:
         content.append(f"Starting point: {border} people infected")
-        content.append("")
-        content.append('\n## Based on Most Recent Week of Data \n')
-        content.append("")
-        content.append(f'\tConfirmed cases on {co.index[-1]} \t {current}\n')
-        content.append(f'\tConfirmed cases on {co.index[-8]} \t {lastweek}\n')
-        content.append(f'\tConfirmed cases on {co.index[-15]} \t {two_weeks_ago}\n')
+        content.append('\n<h2>Based on Most Recent Week of Data</h2>\n')
+        content.append(f'\tConfirmed cases on {co.index[-1]}: <b>{current}</b>\n')
+        content.append(f'\tConfirmed cases on {co.index[-8]} <b>{lastweek}</b>\n')
+        content.append(f'\tConfirmed cases on {co.index[-15]} <b>{two_weeks_ago}</b>\n')
         ratio = current / lastweek
         two_weeks_ratio = lastweek / two_weeks_ago
-        content.append(f'\tRatio (current/last): {round(ratio, 2)}\n')
-        content.append(f'\tRatio (lastweek/two_weeks_ago): {round(two_weeks_ratio, 2)}\n')
-        content.append(f'\tWeekly increase (last-current): {round(100 * (ratio - 1), 1)} %\n')
-        content.append(f'\tWeekly increase (2_weeks_ago-last): {round(100 * (two_weeks_ratio - 1), 1)} %\n')
+        content.append(f'\tRatio (current/last): <b>{round(ratio, 2)}</b>\n')
+        content.append(f'\tRatio (lastweek/two_weeks_ago): <b>{round(two_weeks_ratio, 2)}</b>\n')
+        content.append(f'\tWeekly increase (last-current): <b>{round(100 * (ratio - 1), 1)}%</b>\n')
+        content.append(f'\tWeekly increase (2_weeks_ago-last): <b>{round(100 * (two_weeks_ratio - 1), 1)}%</b>\n')
         dailypercentchange = round(100 * (pow(ratio, 1 / 7) - 1), 1)
-        content.append(f'\tDaily increase (last-current): {dailypercentchange} % per day\n')
+        content.append(f'\tDaily increase (last-current): <b>{dailypercentchange}%</b> per day\n')
         dailypercentchange_two_weeks = round(100 * (pow(two_weeks_ratio, 1 / 7) - 1), 1)
-        content.append(f'\tDaily increase (2_weeks_ago-last): {dailypercentchange_two_weeks} % per day\n')
+        content.append(f'\tDaily increase (2_weeks_ago-last): <b>{dailypercentchange_two_weeks}%</b> per day\n')
         recentdbltime = round(7 * np.log(2) / np.log(ratio), 1)
-        content.append(f'\tDoubling Time [last-current] (represents recent growth): {recentdbltime} days\n')
+        content.append(f'\tDoubling Time [last-current] (represents recent growth): <b>{recentdbltime}</b> days\n')
         recentdbltime_two_weeks = round(7 * np.log(2) / np.log(two_weeks_ratio), 1)
         content.append(
-            f'\tDoubling Time [2_weeks_ago-last] (represents recent growth): {recentdbltime_two_weeks} days\n')
+            f'\tDoubling Time [2_weeks_ago-last] (represents recent growth): <b>{recentdbltime_two_weeks}</b> days\n')
 
     try:
         lpopt, lpcov = curve_fit(logistic, x, y, maxfev=10000)
@@ -93,13 +90,11 @@ def plotCases(dataframe, column, c):
         logisticr2 = 1 - (ss_res / ss_tot)
 
         if logisticr2 > R2_limit:
-            content.append('\n')
             plt.plot(x, logistic(x, *lpopt), 'b--', label="Logistic Curve Fit")
-            content.append('\n## Based on Logistic Fit\n')
-            content.append("")
-            content.append(f'\tR^2:{logisticr2}\n')
+            content.append('<h2>Based on Logistic Fit</h2>\n')
+            content.append(f'\tR&#178;: <b>{logisticr2}</b>\n')
             content.append(f'\tDoubling Time (during middle of growth): '
-                           f'{round(ldoubletime, 2)} (± {round(ldoubletimeerror, 2)}) days\n')
+                           f'<b>{round(ldoubletime, 2)} (&plusmn; {round(ldoubletimeerror, 2)})</b> days\n')
     except:
         pass
 
@@ -119,29 +114,24 @@ def plotCases(dataframe, column, c):
         expr2 = 1 - (ss_res / ss_tot)
 
         if expr2 > R2_limit:
-            content.append("\n")
             plt.plot(x, exponential(x, *epopt), 'r--', label="Exponential Curve Fit")
-            content.append('\n## Based on Exponential Fit \n')
-            content.append("")
-            content.append(f'\tR^2: {expr2}\n')
+            content.append('<h2>Based on Exponential Fit</h2>\n')
+            content.append(f'\tR&#178;: <b>{expr2}</b>\n')
             content.append(f'\tDoubling Time (represents overall growth): '
-                           f'{round(edoubletime, 2)} (± {round(edoubletimeerror, 2)} ) days\n')
+                           f'<b>{round(edoubletime, 2)} (&plusmn; {round(edoubletimeerror, 2)})</b> days\n')
 
     except:
         pass
 
-    # write with pillo a image with write background
-    img = Image.new('RGB', (450, 400), color=(255, 255, 255))
-    d = ImageDraw.Draw(img)
-    for i, l in enumerate(content):
-        d.text((10, 15 * (i + 1)), l, fill=(0, 0, 0))
-    img.save(os.path.join('docs', 'reports', 'report_' + country + '.png'))
+    # write report to HTML
+    report = open(os.path.join('website', 'reports', 'report_' + country + '.html'), "w+")
+    report.write("<br/>".join(content))
+    report.close()
 
     plt.xlabel('Days', fontsize="x-large")
     plt.ylabel('Total Cases', fontsize="x-large")
     plt.legend(fontsize="x-large")
-    plt.savefig(os.path.join('docs', 'images',
-                             'figure_' + country + '.png'))
+    plt.savefig(os.path.join('website', 'images', 'figure_' + country + '.png'))
 
 
 if __name__ == '__main__':
