@@ -49,11 +49,12 @@ function loadReports() {
 }
 
 /**
- * Load data from ./data/data.json
+ * Load data from ./data/data-example.json
  * Add an entry for each country and load data
  */
 function init() {
-    var url = 'data/data.json?_t='+new Date().getTime();
+    //TODO switch to data.json
+    var url = 'data/data-example.json?_t='+new Date().getTime();
     $.get(url, function(data) {
         if (data && data.countries) {
             setupCountryList(data.countries);
@@ -88,7 +89,6 @@ function setupCountryData(countries) {
         var countryContainer = countryList.find('#'+country.key);
         loadGraph(countryContainer.find('.country-graph'), country.graph);
         loadReport(countryContainer.find('.country-report'), country.report);
-
     });
 }
 
@@ -99,14 +99,20 @@ function setupCountryData(countries) {
  */
 function loadGraph(container, data, ) {
 
-    var chartData = google.visualization.arrayToDataTable(data);
+    var chartData = new google.visualization.DataTable();
+    chartData.addColumn('number', 'Days');
+    chartData.addColumn('number', 'Original Data');
+    chartData.addColumn('number', 'Logistic Curve');
+    chartData.addColumn('number', 'Exponential Curve');
+    chartData.addRows(data);
+
     var options = {
-        curveType: 'function'
+        curveType: 'function',
+        interpolateNulls: true
     };
 
     var chart = new google.visualization.LineChart(container.get(0));
     chart.draw(chartData, options);
-
 }
 
 /**

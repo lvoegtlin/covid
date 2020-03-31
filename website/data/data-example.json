@@ -4,11 +4,10 @@
             "name": "Switzerland",
             "key": "switzerland",
             "graph": [
-                ["Days", "Original Data", "Logistic Curve", "Exponential Curve"],
-                ["2004", 1000, 400, 400],
-                ["2005", 1170, 460, 460],
-                ["2006", 660, 1120, 1120],
-                ["2007", 1030, 540, 540]
+                [1, 1000, 500, 400],
+                [2, 1170, null, 460],
+                [3, 660, 1220, 1120],
+                [4, 1030, 640, 540]
             ],
             "report": [
                 "Starting point: 42 people infected",
