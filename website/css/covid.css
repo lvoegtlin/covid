@@ -105,10 +105,13 @@ main .container h2 {
     text-decoration: underline;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
 main img {
     max-width: 100%;
+}
+
+.back-to-top {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    display: none;
 }
