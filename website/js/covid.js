@@ -54,7 +54,7 @@ function loadReports() {
  */
 function init() {
     //TODO switch to data.json
-    var url = 'data/data-example.json?_t='+new Date().getTime();
+    var url = 'data/data.json?_t='+new Date().getTime();
     $.get(url, function(data) {
         if (data && data.countries) {
             setupCountryList(data.countries);
