@@ -1,24 +1,16 @@
-import json
-import os
-from datetime import date, timedelta
-
 import pandas as pd
 import numpy as np
 
 from scipy.optimize import curve_fit
 
+from src.report.report import GeneralReport
+from src.utils.functions import logistic, exponential
+from src.utils.io import create_json
+
 df = pd.read_csv(
     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
 relevance = 0.05
 R2_limit = 0.5
-
-
-def logistic(t, a, b, c, d):
-    return c + (d - c) / (1 + a * np.exp(- b * t))
-
-
-def exponential(t, a, b, c):
-    return a * np.exp(b * t) + c
 
 
 def plotCases(dataframe, column, c):
@@ -105,7 +97,7 @@ def plotCases(dataframe, column, c):
 
     return graphs.tolist(), {
         "border": border,
-        "co": co,
+        "date": co.index,
         "y_original": y_original,
         "expr2": expr2,
         "edoubletime": edoubletime,
@@ -116,57 +108,6 @@ def plotCases(dataframe, column, c):
     }
 
 
-def create_report(border, co, y_original,
-                  expr2, edoubletime, edoubletimeerror,
-                  logisticr2, ldoubletime, ldoubletimeerror):
-    current = y_original[-1]
-    lastweek = y_original[-8]
-    two_weeks_ago = y_original[-15]
-    content = []
-
-    if current > lastweek:
-        content.append(f"Starting point: {border} people infected<br/>")
-        content.append('\n<h2>Based on Most Recent Week of Data</h2>\n')
-        content.append(f'\tConfirmed cases on {co.index[-1]}: <b>{current}</b>\n')
-        content.append(f'\tConfirmed cases on {co.index[-8]} <b>{lastweek}</b>\n')
-        content.append(f'\tConfirmed cases on {co.index[-15]} <b>{two_weeks_ago}</b>\n')
-        ratio = current / lastweek
-        two_weeks_ratio = lastweek / two_weeks_ago
-        content.append(f'\tRatio (current/last): <b>{round(ratio, 2)}</b>\n')
-        content.append(f'\tRatio (lastweek/two_weeks_ago): <b>{round(two_weeks_ratio, 2)}</b>\n')
-        content.append(f'\tWeekly increase (last-current): <b>{round(100 * (ratio - 1), 1)}%</b>\n')
-        content.append(f'\tWeekly increase (2_weeks_ago-last): <b>{round(100 * (two_weeks_ratio - 1), 1)}%</b>\n')
-        dailypercentchange = round(100 * (pow(ratio, 1 / 7) - 1), 1)
-        content.append(f'\tDaily increase (last-current): <b>{dailypercentchange}%</b> per day\n')
-        dailypercentchange_two_weeks = round(100 * (pow(two_weeks_ratio, 1 / 7) - 1), 1)
-        content.append(f'\tDaily increase (2_weeks_ago-last): <b>{dailypercentchange_two_weeks}%</b> per day\n')
-        recentdbltime = round(7 * np.log(2) / np.log(ratio), 1)
-        content.append(f'\tDoubling Time [last-current] (represents recent growth): <b>{recentdbltime}</b> days\n')
-        recentdbltime_two_weeks = round(7 * np.log(2) / np.log(two_weeks_ratio), 1)
-        content.append(
-            f'\tDoubling Time [2_weeks_ago-last] (represents recent growth): <b>{recentdbltime_two_weeks}</b> days\n')
-
-        if expr2 is not None or edoubletime is not None or edoubletimeerror is not None:
-            content.append('<h2>Based on Exponential Fit</h2>\n')
-            content.append(f'\tR&#178;: <b>{expr2}</b>\n')
-            content.append(f'\tDoubling Time (represents overall growth): '
-                           f'<b>{round(edoubletime, 2)} (&plusmn; {round(edoubletimeerror, 2)})</b> days\n')
-
-        if logisticr2 is not None or ldoubletime is not None or ldoubletimeerror is not None:
-            content.append('<h2>Based on Logistic Fit</h2>\n')
-            content.append(f'\tR&#178;: <b>{logisticr2}</b>\n')
-            content.append(f'\tDoubling Time (during middle of growth): '
-                           f'<b>{round(ldoubletime, 2)} (&plusmn; {round(ldoubletimeerror, 2)})</b> days\n')
-
-    return content
-
-
-def create_json(countries_data):
-    countries_json = {"countries": [country_data for country_data in countries_data]}
-    with open(os.path.join("website", "data", "data.json"), "w") as f:
-        json.dump(countries_json, f)
-
-
 if __name__ == '__main__':
     countries_data = []
     countries = [('Switzerland', 8570000)]  # , ('Germany', 82790000), ('US', 327200000), (None, 7530000000)]
@@ -174,7 +115,7 @@ if __name__ == '__main__':
         # get different figures
         default_figure, report_data = plotCases(df, 'Country/Region', c)
         # get report
-        general_report = create_report(**report_data)
+        general_report = GeneralReport(**report_data).get_report()
         # add it to the countries json
         countries_data.append({
             "name": c[0],
