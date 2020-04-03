@@ -3,21 +3,18 @@ import numpy as np
 
 class GeneralReport:
 
-    def __init__(self, border, date, y_original,
-                 expr2, edoubletime, edoubletimeerror,
-                 logisticr2, ldoubletime, ldoubletimeerror):
+    def __init__(self, dates, exp, y):
         self.report = []
-        self.border = border
-        self.date = date
-        self.expr2 = expr2
-        self.edoubletime = edoubletime
-        self.edoubletimeerror = edoubletimeerror
-        self.logisticr2 = logisticr2
-        self.ldoubletime = ldoubletime
-        self.ldoubletimeerror = ldoubletimeerror
-        self.current = y_original[-1]
-        self.lastweek = y_original[-8]
-        self.two_weeks_ago = y_original[-15]
+        self.date = dates
+        self.expr2 = exp.expr2
+        self.edoubletime = exp.edoubletime
+        self.edoubletimeerror = exp.edoubletimeerror
+        self.logisticr2 = exp.logisticr2
+        self.ldoubletime = exp.ldoubletime
+        self.ldoubletimeerror = exp.ldoubletimeerror
+        self.current = y[-1]
+        self.lastweek = y[-8]
+        self.two_weeks_ago = y[-15]
 
     def get_report(self):
         if not self.report:
@@ -42,7 +39,6 @@ class GeneralReport:
     def _create_report(self):
         values = self._create_key_values()
         if self.current > self.lastweek:
-            self.report.append(f"Starting point: {self.border} people infected<br/>")
             self.report.append('\n<h2>Based on Most Recent Week of Data</h2>\n')
             self.report.append(f'\tConfirmed cases on {self.date[-1]}: <b>{self.current}</b>\n')
             self.report.append(f'\tConfirmed cases on {self.date[-8]} <b>{self.lastweek}</b>\n')

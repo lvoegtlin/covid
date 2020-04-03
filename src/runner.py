@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit
 
 from src.report.report import GeneralReport
 from src.utils.functions import logistic, exponential
-from src.utils.io import create_json
+from src.utils.json_output import create_json
 
 df = pd.read_csv(
     'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')

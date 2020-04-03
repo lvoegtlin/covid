@@ -1,16 +1,9 @@
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod
 
 
-class SafeSingleton(ABCMeta):
-    _instances = {}
+class AbstractFigure:
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super().__call__(*args, **kwargs)
-        return cls._instances[cls]
-
-
-class AbstractFigure(SafeSingleton):
+    headers = []
 
     @abstractmethod
     def get_figure_key_data(self):
