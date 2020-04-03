@@ -8,7 +8,6 @@ from src.utils.functions import logistic, exponential
 
 
 class ExponentialLogisticFitting(AbstractFigure):
-    headers = ['original', 'logistic', 'exponential']
 
     def __init__(self, x, y):
         self.x = x

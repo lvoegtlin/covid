@@ -35,6 +35,7 @@ class JSONOutput:
             "name": country,
             "key": country.lower(),
             "graph": graphs.get_graphs(),  # TODO change for multigraph
+            "headers": graphs.headers,
             "dates": self.dates,
             "report": report
         }
