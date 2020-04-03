@@ -87,7 +87,7 @@ function setupCountryData(countries) {
     var countryList = $('#country-list');
     $.each(countries, function(i, country) {
         var countryContainer = countryList.find('#'+country.key);
-        loadGraph(countryContainer.find('.country-graph'), country.graph);
+        loadGraph(countryContainer.find('.country-graph'), country.graph, country.dates, country.headers);
         loadReport(countryContainer.find('.country-report'), country.report);
     });
 }
@@ -95,15 +95,44 @@ function setupCountryData(countries) {
 /**
  * Render graph to country-graph container
  * @param container
- * @param data
+ * @param graph
+ * @param dates
+ * @param dates
  */
-function loadGraph(container, data, ) {
+function loadGraph(container, graph, dates, headers) {
+
+    var headerConfig = {
+        original: {
+            type: 'number',
+            longName: 'Original Data',
+            shortName: 'Original',
+            series: {color: '#000000', pointShape: 'circle', pointSize: 10, lineWidth: 0}
+        },
+        logistic: {
+            type: 'number',
+            longName: 'Logistic Curve',
+            shortName: 'Logistic',
+            series: {color: '#0000ff', lineDashStyle: [10, 4]}
+        },
+        exponential: {
+            type: 'number',
+            longName: 'Exponential Curve',
+            shortName: 'Exponential',
+            series: {color: '#ff0000', lineDashStyle: [10, 4]}
+        },
+    };
 
     var chartData = new google.visualization.DataTable();
-    chartData.addColumn('number', 'Days');
-    chartData.addColumn('number', 'Original Data');
-    chartData.addColumn('number', 'Logistic Curve');
-    chartData.addColumn('number', 'Exponential Curve');
+    chartData.addColumn('date', 'Date');
+
+    var series = {};
+    $.each(headers, function(i, headerKey) {
+        var header = headerConfig[headerKey];
+        chartData.addColumn(header.type, header.longName);
+        series[i] = header.series;
+    });
+
+    var data = prepareData(graph, dates);
     chartData.addRows(data);
 
     var options = {
@@ -118,23 +147,45 @@ function loadGraph(container, data, ) {
             height: '80%'
         },
         legend: {
-            position: 'in'
+            position: 'in',
+            textStyle: {
+                bold: false,
+                fontSize: 16
+            }
         },
         hAxis: {
-            title: 'Days'
+            title: 'Date',
+            titleTextStyle: {
+                bold: true,
+                fontSize: 16,
+                italic: false
+            }
         },
         vAxis: {
-            title: 'Total Cases'
+            format: '0',
+            title: 'Total Cases',
+            titleTextStyle: {
+                bold: true,
+                fontSize: 16,
+                italic: false
+            }
         },
-        series: {
-            0: {color: '#000000', pointShape: 'circle', pointSize: 10, lineWidth: 0},
-            1: {color: '#0000ff', lineDashStyle: [10, 4]},
-            2: {color: '#ff0000', lineDashStyle: [10, 4]}
-        }
+        series: series
     };
 
     var chart = new google.visualization.LineChart(container.get(0));
     chart.draw(chartData, options);
+}
+
+/**
+ * Column 0 contains DateString ('yyyy-MM-dd') which is parsed as Date
+ * @param graph
+ * @param dates
+ */
+function prepareData(graph, dates) {
+    return dates.map(function(row, idx) {
+        return [new Date(row)].concat(graph[idx]);
+    });
 }
 
 /**
