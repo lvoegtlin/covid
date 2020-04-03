@@ -365,6 +365,11 @@
           21705.329419084534
         ]
       ],
+      "headers": [
+        "original",
+        "logistic",
+        "exponential"
+      ],
       "dates": [
         "1/22/20",
         "1/23/20",
