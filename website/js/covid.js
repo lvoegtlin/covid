@@ -2,7 +2,7 @@ $(document).ready(function() {
 
     loadReports();
 
-    google.charts.load('current', {packages: ['corechart']});
+    google.charts.load('current', {packages: ['corechart', 'controls']});
     google.charts.setOnLoadCallback(init);
 
     // Show Scroll to Top
@@ -53,13 +53,26 @@ function loadReports() {
  * Add an entry for each country and load data
  */
 function init() {
-    //TODO switch to data.json
+    loadTemplate(function(template) {
+        loadData(function(data) {
+            if (data && data.country_data) {
+                setupCountryList(data.country_data, template);
+                setupCountryData(data.country_data);
+            }
+        });
+    });
+
+}
+function loadTemplate(cb) {
+    var url = 'data/template.html?_t='+new Date().getTime();
+    $.get(url, function(data) {
+        cb(data);
+    });
+}
+function loadData(cb) {
     var url = 'data/data.json?_t='+new Date().getTime();
     $.get(url, function(data) {
-        if (data && data.countries) {
-            setupCountryList(data.countries);
-            setupCountryData(data.countries);
-        }
+        cb(data);
     });
 }
 
@@ -67,13 +80,21 @@ function init() {
  * Setup template for each country
  * @param countries
  */
-var template = "<div class=\"row\"> <div class=\"col-12 country\" id=\"\"> <h1 class=\"country-title\"></h1> <div class=\"country-graph\"></div><div class=\"country-report\"></div></div></div><hr class=\"mb-4 mt-5\"/>";
-function setupCountryList(countries) {
+function setupCountryList(countries, template) {
     var countryList = $('#country-list');
     $.each(countries, function(i, country) {
         var templateInstance = $(template);
         templateInstance.find('.country').attr('id', country.key);
         templateInstance.find('.country-title').html(country.name);
+        templateInstance.find('.collapse').attr('id', 'collapse-'+country.key);
+        templateInstance.find('.filter').attr('id', 'filter-'+country.key);
+        templateInstance.find('.country-graph').attr('id', 'graph-'+country.key);
+        var header = templateInstance.find('.card-header');
+        header.attr('id', 'header-'+country.key);
+        var btn = header.find('button');
+        btn.data('target', '#collapse-'+country.key);
+        btn.attr('data-target', '#collapse-'+country.key);
+        btn.html('Report for ' + country.name);
         countryList.append(templateInstance);
     });
 }
@@ -87,20 +108,21 @@ function setupCountryData(countries) {
     var countryList = $('#country-list');
     $.each(countries, function(i, country) {
         var countryContainer = countryList.find('#'+country.key);
-        loadGraph(countryContainer.find('.country-graph'), country.graph, country.dates, country.headers);
+        loadGraph(countryContainer.find('.country-graph'), countryContainer.find('.country-dashboard'), country);
         loadReport(countryContainer.find('.country-report'), country.report);
     });
 }
 
 /**
  * Render graph to country-graph container
- * @param container
- * @param graph
- * @param dates
- * @param dates
+ * @param chartContainer
+ * @param dashboardContainer
+ * @param countryData
  */
-function loadGraph(container, graph, dates, headers) {
-
+function loadGraph(chartContainer, dashboardContainer, countryData) {
+    var graph = countryData.graph;
+    var dates = countryData.dates;
+    var headers = countryData.headers;
     var headerConfig = {
         original: {
             type: 'number',
@@ -173,8 +195,22 @@ function loadGraph(container, graph, dates, headers) {
         series: series
     };
 
-    var chart = new google.visualization.LineChart(container.get(0));
-    chart.draw(chartData, options);
+    var dashboard = new google.visualization.Dashboard(dashboardContainer.get(0));
+    var dateRangeSlider = new google.visualization.ControlWrapper({
+        'controlType': 'DateRangeFilter',
+        'containerId': 'filter-'+countryData.key,
+        'options': {
+            'filterColumnLabel': 'Date'
+        }
+    });
+    var lineChart = new google.visualization.ChartWrapper({
+        chartType: 'LineChart',
+        containerId: chartContainer.attr('id'),
+        options: options
+    });
+
+    dashboard.bind(dateRangeSlider, lineChart);
+    dashboard.draw(chartData);
 }
 
 /**

@@ -105,10 +105,6 @@ main .container h2 {
     text-decoration: underline;
 }
 
-main img {
-    max-width: 100%;
-}
-
 .back-to-top {
     position: fixed;
     bottom: 25px;
@@ -118,4 +114,21 @@ main img {
 
 .country-graph {
     min-height: 500px;
+}
+
+.country .card-header {
+    padding: 0;
+}
+.country .card-header h5 {
+    margin: 0;
+}
+.country .card-header button {
+    display: block;
+    width: 100%;
+    padding: .75rem 1.25rem;
+    text-align: left;
+}
+
+div.google-visualization-tooltip {
+    width: 300px;
 }
