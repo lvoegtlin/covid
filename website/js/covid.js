@@ -53,13 +53,26 @@ function loadReports() {
  * Add an entry for each country and load data
  */
 function init() {
-    //TODO switch to data.json
+    loadTemplate(function(template) {
+        loadData(function(data) {
+            if (data && data.country_data) {
+                setupCountryList(data.country_data, template);
+                setupCountryData(data.country_data);
+            }
+        });
+    });
+
+}
+function loadTemplate(cb) {
+    var url = 'data/template.html?_t='+new Date().getTime();
+    $.get(url, function(data) {
+        cb(data);
+    });
+}
+function loadData(cb) {
     var url = 'data/data.json?_t='+new Date().getTime();
     $.get(url, function(data) {
-        if (data && data.countries) {
-            setupCountryList(data.countries);
-            setupCountryData(data.countries);
-        }
+        cb(data);
     });
 }
 
@@ -67,13 +80,19 @@ function init() {
  * Setup template for each country
  * @param countries
  */
-var template = "<div class=\"row\"> <div class=\"col-12 country\" id=\"\"> <h1 class=\"country-title\"></h1> <div class=\"country-graph\"></div><div class=\"country-report\"></div></div></div><hr class=\"mb-4 mt-5\"/>";
-function setupCountryList(countries) {
+function setupCountryList(countries, template) {
     var countryList = $('#country-list');
     $.each(countries, function(i, country) {
         var templateInstance = $(template);
         templateInstance.find('.country').attr('id', country.key);
         templateInstance.find('.country-title').html(country.name);
+        templateInstance.find('.collapse').attr('id', 'collapse-'+country.key);
+        var header = templateInstance.find('.card-header');
+        header.attr('id', 'header-'+country.key);
+        var btn = header.find('button');
+        btn.data('target', '#collapse-'+country.key);
+        btn.attr('data-target', '#collapse-'+country.key);
+        btn.html('Report for ' + country.name);
         countryList.append(templateInstance);
     });
 }
@@ -97,7 +116,7 @@ function setupCountryData(countries) {
  * @param container
  * @param graph
  * @param dates
- * @param dates
+ * @param headers
  */
 function loadGraph(container, graph, dates, headers) {
 
