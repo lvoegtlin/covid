@@ -22,16 +22,16 @@ class ExponentialLogisticFitting(AbstractFigure):
         self.graphs = y_copy
         self.headers = ['original']
 
-        try:
-            self._fit_curve_logistic()
+        self.y_logistic, self.lpopt, self.lpcov = self._fit_curve(logistic, {'maxfev': 10000})
+        if self.y_logistic.size != 0:
             self.headers.append('logistic')
-        except:
-            pass
-        try:
-            self._fit_curve_exponential()
+
+        self.y_expo, self.epopt, self.epcov = self._fit_curve(exponential,
+                                                              {'bounds': ([0, 0, -100], [100, 0.9, 100]),
+                                                               'maxfev': 10000})
+        if self.y_expo.size != 0:
             self.headers.append('exponential')
-        except:
-            pass
+
         self._calculate_figure_key_data()
         self._create_graph_data()
 
@@ -49,9 +49,7 @@ class ExponentialLogisticFitting(AbstractFigure):
         self.ldoubletimeerror = 1.96 * self.ldoubletime * np.abs(self.lerror[1] / self.lpopt[1])
         # calculate R^2
         residuals = self.y - logistic(self.x, *self.lpopt)
-        ss_res = np.sum(residuals ** 2)
-        ss_tot = np.sum((self.y - np.mean(self.y)) ** 2)
-        self.logisticr2 = 1 - (ss_res / ss_tot)
+        self.logisticr2 = self._calculate_R2(self.x, self.y_logistic, self.lpopt, logistic)
 
     def _calculate_figure_key_data_exponential(self):
         if self.epcov is None:
@@ -62,28 +60,63 @@ class ExponentialLogisticFitting(AbstractFigure):
         # standard error
         self.edoubletimeerror = 1.96 * self.edoubletime * np.abs(self.eerror[1] / self.epopt[1])
         # calculate R^2
-        residuals = self.y - exponential(self.x, *self.epopt)
+        self.expr2 = self._calculate_R2(self.x, self.y_expo, self.epopt, exponential)
+
+    def _calculate_R2(self, x, y, points, function):
+        residuals = y - function(x, *points)
         ss_res = np.sum(residuals ** 2)
-        ss_tot = np.sum((self.y - np.mean(self.y)) ** 2)
-        self.expr2 = 1 - (ss_res / ss_tot)
+        ss_tot = np.sum((y - np.mean(y)) ** 2)
+        return 1 - (ss_res / ss_tot)
 
     def _create_graph_data(self):
         if self.logisticr2 > Constants.R2_LIMIT:
             y_logistic = logistic(self.x, *self.lpopt)
-            y_logistic = np.reshape(np.copy(y_logistic), (len(y_logistic), 1))
-            self.graphs = np.concatenate((self.graphs, y_logistic), axis=1)
+            # if we have a smaller array
+            container = self._adopt_graph_size(y_logistic)
+            container = np.reshape(np.copy(container), (len(container), 1))
+            self.graphs = np.concatenate((self.graphs, container), axis=1)
 
         if self.expr2 > Constants.R2_LIMIT:
             y_exponential = exponential(self.x, *self.epopt)
-            y_exponential = np.reshape(np.copy(y_exponential), (len(y_exponential), 1))
-            self.graphs = np.concatenate((self.graphs, y_exponential), axis=1)
+            container = self._adopt_graph_size(y_exponential)
+            container = np.reshape(np.copy(container), (len(container), 1))
+            self.graphs = np.concatenate((self.graphs, container), axis=1)
 
-    def _fit_curve_logistic(self):
-        self.lpopt, self.lpcov = curve_fit(logistic, self.x, self.y, maxfev=10000)
+    def _adopt_graph_size(self, y_exponential):
 
-    def _fit_curve_exponential(self):
-        self.epopt, self.epcov = curve_fit(exponential, self.x, self.y, bounds=([0, 0, -100], [100, 0.9, 100]),
-                                           maxfev=10000)
+        if y_exponential.size < self.y.size:
+            container = np.arange(self.y.size)
+            container[self.y.size - y_exponential.size:] = y_exponential
+        elif y_exponential.size > self.y.size:
+            container = y_exponential[y_exponential.size - self.y.size:]
+        else:
+            container = y_exponential
+        return container
+
+    def _fit_curve(self, function, parameters):
+        # start where the first datapoint is not 0 and then add some 0 and compare the cov
+        best_r2 = 0
+        best_y = []
+        best_opt = []
+        best_cov = []
+        no_zero_data = self.y[self.y != 0]
+        for i in np.arange(no_zero_data.size):
+            new_size = no_zero_data.size + i
+            new_y = np.zeros(new_size)
+            new_y[new_size - no_zero_data.size:] = no_zero_data
+            # fitting curve
+            try:
+                opt, cov = curve_fit(function, self.x, self.y, **parameters)
+            except:
+                continue
+            r2 = self._calculate_R2(np.arange(new_y.size), new_y, opt, function)
+            if r2 > best_r2:
+                best_r2 = r2
+                best_y = new_y
+                best_opt = opt
+                best_cov = cov
+
+        return best_y, best_opt, best_cov
 
     def get_graphs(self):
         return self.graphs.tolist()
