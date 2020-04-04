@@ -2,7 +2,7 @@ $(document).ready(function() {
 
     loadReports();
 
-    google.charts.load('current', {packages: ['corechart']});
+    google.charts.load('current', {packages: ['corechart', 'controls']});
     google.charts.setOnLoadCallback(init);
 
     // Show Scroll to Top
@@ -87,6 +87,8 @@ function setupCountryList(countries, template) {
         templateInstance.find('.country').attr('id', country.key);
         templateInstance.find('.country-title').html(country.name);
         templateInstance.find('.collapse').attr('id', 'collapse-'+country.key);
+        templateInstance.find('.filter').attr('id', 'filter-'+country.key);
+        templateInstance.find('.country-graph').attr('id', 'graph-'+country.key);
         var header = templateInstance.find('.card-header');
         header.attr('id', 'header-'+country.key);
         var btn = header.find('button');
@@ -106,20 +108,21 @@ function setupCountryData(countries) {
     var countryList = $('#country-list');
     $.each(countries, function(i, country) {
         var countryContainer = countryList.find('#'+country.key);
-        loadGraph(countryContainer.find('.country-graph'), country.graph, country.dates, country.headers);
+        loadGraph(countryContainer.find('.country-graph'), countryContainer.find('.country-dashboard'), country);
         loadReport(countryContainer.find('.country-report'), country.report);
     });
 }
 
 /**
  * Render graph to country-graph container
- * @param container
- * @param graph
- * @param dates
- * @param headers
+ * @param chartContainer
+ * @param dashboardContainer
+ * @param countryData
  */
-function loadGraph(container, graph, dates, headers) {
-
+function loadGraph(chartContainer, dashboardContainer, countryData) {
+    var graph = countryData.graph;
+    var dates = countryData.dates;
+    var headers = countryData.headers;
     var headerConfig = {
         original: {
             type: 'number',
@@ -192,8 +195,22 @@ function loadGraph(container, graph, dates, headers) {
         series: series
     };
 
-    var chart = new google.visualization.LineChart(container.get(0));
-    chart.draw(chartData, options);
+    var dashboard = new google.visualization.Dashboard(dashboardContainer.get(0));
+    var dateRangeSlider = new google.visualization.ControlWrapper({
+        'controlType': 'DateRangeFilter',
+        'containerId': 'filter-'+countryData.key,
+        'options': {
+            'filterColumnLabel': 'Date'
+        }
+    });
+    var lineChart = new google.visualization.ChartWrapper({
+        chartType: 'LineChart',
+        containerId: chartContainer.attr('id'),
+        options: options
+    });
+
+    dashboard.bind(dateRangeSlider, lineChart);
+    dashboard.draw(chartData);
 }
 
 /**
