@@ -22,12 +22,15 @@ class GeneralReport:
         return self.report
 
     def _create_key_values(self):
-        ratio = self.current / self.lastweek
-        two_weeks_ratio = self.lastweek / self.two_weeks_ago
-        dailypercentchange = round(100 * (pow(ratio, 1 / 7) - 1), 1)
-        dailypercentchange_two_weeks = round(100 * (pow(two_weeks_ratio, 1 / 7) - 1), 1)
-        recentdbltime = round(7 * np.log(2) / np.log(ratio), 1)
-        recentdbltime_two_weeks = round(7 * np.log(2) / np.log(two_weeks_ratio), 1)
+        ratio = self.current / self.lastweek if self.lastweek is not 0 else None
+        two_weeks_ratio = self.lastweek / self.two_weeks_ago \
+            if self.two_weeks_ago is not 0 else None
+        dailypercentchange = round(100 * (pow(ratio, 1 / 7) - 1), 1) if ratio is not None else None
+        dailypercentchange_two_weeks = round(100 * (pow(two_weeks_ratio, 1 / 7) - 1), 1)\
+            if two_weeks_ratio is not None else None
+        recentdbltime = round(7 * np.log(2) / np.log(ratio), 1) if ratio is not None else None
+        recentdbltime_two_weeks = round(7 * np.log(2) / np.log(two_weeks_ratio), 1)\
+            if two_weeks_ratio is not None else None
 
         return {"ratio": ratio,
                 "two_weeks_ratio": two_weeks_ratio,
@@ -43,18 +46,26 @@ class GeneralReport:
             self.report.append(f'\tConfirmed cases on {self.date[-1]}: <b>{self.current}</b>\n')
             self.report.append(f'\tConfirmed cases on {self.date[-8]} <b>{self.lastweek}</b>\n')
             self.report.append(f'\tConfirmed cases on {self.date[-15]} <b>{self.two_weeks_ago}</b>\n')
-            self.report.append(f'\tRatio (current/last): <b>{round(values["ratio"], 2)}</b>\n')
-            self.report.append(f'\tRatio (lastweek/two_weeks_ago): <b>{round(values["two_weeks_ratio"], 2)}</b>\n')
-            self.report.append(f'\tWeekly increase (last-current): <b>{round(100 * (values["ratio"] - 1), 1)}%</b>\n')
+            self.report.append(f'\tRatio (current/last): <b>{round(values["ratio"], 2)}</b>\n')\
+                if values["ratio"] is not None else None
+            self.report.append(f'\tRatio (lastweek/two_weeks_ago): <b>{round(values["two_weeks_ratio"], 2)}</b>\n') \
+                if values["two_weeks_ratio"] is not None else None
+            self.report.append(f'\tWeekly increase (last-current): <b>{round(100 * (values["ratio"] - 1), 1)}%</b>\n') \
+                if values["ratio"] is not None else None
             self.report.append(
-                f'\tWeekly increase (2_weeks_ago-last): <b>{round(100 * (values["two_weeks_ratio"] - 1), 1)}%</b>\n')
-            self.report.append(f'\tDaily increase (last-current): <b>{values["dailypercentchange"]}%</b> per day\n')
+                f'\tWeekly increase (2_weeks_ago-last): <b>{round(100 * (values["two_weeks_ratio"] - 1), 1)}%</b>\n') \
+                if values["two_weeks_ratio"] is not None else None
+            self.report.append(f'\tDaily increase (last-current): <b>{values["dailypercentchange"]}%</b> per day\n') \
+                if values["ratio"] is not None else None
             self.report.append(
-                f'\tDaily increase (2_weeks_ago-last): <b>{values["dailypercentchange_two_weeks"]}%</b> per day\n')
+                f'\tDaily increase (2_weeks_ago-last): <b>{values["dailypercentchange_two_weeks"]}%</b> per day\n')\
+                if values["two_weeks_ratio"] is not None else None
             self.report.append(
-                f'\tDoubling Time [last-current] (represents recent growth): <b>{values["recentdbltime"]}</b> days\n')
+                f'\tDoubling Time [last-current] (represents recent growth): <b>{values["recentdbltime"]}</b> days\n') \
+                if values["ratio"] is not None else None
             self.report.append(
-                f'\tDoubling Time [2_weeks_ago-last] (represents recent growth): <b>{values["recentdbltime_two_weeks"]}</b> days\n')
+                f'\tDoubling Time [2_weeks_ago-last] (represents recent growth): <b>{values["recentdbltime_two_weeks"]}</b> days\n')\
+                if values["two_weeks_ratio"] is not None else None
 
             if self.expr2 is not None or self.edoubletime is not None or self.edoubletimeerror is not None:
                 self.report.append('<h2>Based on Exponential Fit</h2>\n')

@@ -2,6 +2,7 @@ from src.figures.exponential_logistic_fitting import ExponentialLogisticFitting
 from src.report.report import GeneralReport
 from src.utils.data_prep import DataContainer
 from src.utils.json_output import JSONOutput
+from tqdm import tqdm
 
 import numpy as np
 
@@ -13,7 +14,7 @@ if __name__ == '__main__':
     json_output = JSONOutput.get_instance()
     json_output.dates = list(dates)
     json_output.countries = data_container.get_country_list()
-    for country in data_container.get_data().T[159:160].T:  # TODO testing data_container.get_data():
+    for country in tqdm(data_container.get_data()):
         x = np.arange(dates.size)
         y = data_container.get_data()[country].values
         figures = []

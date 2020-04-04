@@ -12,12 +12,12 @@ class ExponentialLogisticFitting(AbstractFigure):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.logisticr2 = None
-        self.ldoubletime = None
-        self.ldoubletimeerror = None
-        self.expr2 = None
-        self.edoubletime = None
-        self.edoubletimeerror = None
+        self.logisticr2 = 0
+        self.ldoubletime = 0
+        self.ldoubletimeerror = 0
+        self.expr2 = 0
+        self.edoubletime = 0
+        self.edoubletimeerror = 0
         y_copy = np.reshape(np.copy(y), (len(y), 1))
         self.graphs = y_copy
         self.headers = ['original']
@@ -40,7 +40,7 @@ class ExponentialLogisticFitting(AbstractFigure):
         self._calculate_figure_key_data_exponential()
 
     def _calculate_figure_key_data_logistic(self):
-        if self.lpopt is None:
+        if self.lpopt is None or self.lpopt.size == 0:
             return
         self.lerror = np.sqrt(np.diag(self.lpcov))
         # for logistic curve at half maximum, slope = growth rate/2. so doubling time = ln(2) / (growth rate/2)
@@ -49,10 +49,10 @@ class ExponentialLogisticFitting(AbstractFigure):
         self.ldoubletimeerror = 1.96 * self.ldoubletime * np.abs(self.lerror[1] / self.lpopt[1])
         # calculate R^2
         residuals = self.y - logistic(self.x, *self.lpopt)
-        self.logisticr2 = self._calculate_R2(self.x, self.y_logistic, self.lpopt, logistic)
+        self.logisticr2 = self._calculate_R2(self.x, self._adopt_graph_size(self.y_logistic), self.lpopt, logistic)
 
     def _calculate_figure_key_data_exponential(self):
-        if self.epcov is None:
+        if self.epcov is None or self.epopt.size == 0:
             return
         self.eerror = np.sqrt(np.diag(self.epcov))
         # for exponential curve, slope = growth rate. so doubling time = ln(2) / growth rate
@@ -60,7 +60,7 @@ class ExponentialLogisticFitting(AbstractFigure):
         # standard error
         self.edoubletimeerror = 1.96 * self.edoubletime * np.abs(self.eerror[1] / self.epopt[1])
         # calculate R^2
-        self.expr2 = self._calculate_R2(self.x, self.y_expo, self.epopt, exponential)
+        self.expr2 = self._calculate_R2(self.x, self._adopt_graph_size(self.y_expo), self.epopt, exponential)
 
     def _calculate_R2(self, x, y, points, function):
         residuals = y - function(x, *points)
@@ -82,23 +82,23 @@ class ExponentialLogisticFitting(AbstractFigure):
             container = np.reshape(np.copy(container), (len(container), 1))
             self.graphs = np.concatenate((self.graphs, container), axis=1)
 
-    def _adopt_graph_size(self, y_exponential):
+    def _adopt_graph_size(self, y):
 
-        if y_exponential.size < self.y.size:
+        if y.size < self.y.size:
             container = np.arange(self.y.size)
-            container[self.y.size - y_exponential.size:] = y_exponential
-        elif y_exponential.size > self.y.size:
-            container = y_exponential[y_exponential.size - self.y.size:]
+            container[self.y.size - y.size:] = y
+        elif y.size > self.y.size:
+            container = y[y.size - self.y.size:]
         else:
-            container = y_exponential
+            container = y
         return container
 
     def _fit_curve(self, function, parameters):
         # start where the first datapoint is not 0 and then add some 0 and compare the cov
         best_r2 = 0
-        best_y = []
-        best_opt = []
-        best_cov = []
+        best_y = np.asarray([])
+        best_opt = np.asarray([])
+        best_cov = np.asarray([])
         no_zero_data = self.y[self.y != 0]
         for i in np.arange(no_zero_data.size):
             new_size = no_zero_data.size + i
