@@ -8,6 +8,7 @@ class JSONOutput:
     def __init__(self):
         if JSONOutput.__instance is not None:
             JSONOutput.get_instance()
+        self.country_data = []
         self.countries = []
         self.dates = []
 
@@ -23,10 +24,12 @@ class JSONOutput:
         :param country_data: tuple(graphs, report)
         :return:
         """
-        self.countries.append((country, graphs, report))
+        self.country_data.append((country, graphs, report))
 
     def create_json(self):
-        countries_json = {"countries": [self._create_country_json(*country_data) for country_data in self.countries]}
+        countries_json = {"countries": self.countries,
+                          "country_data": [self._create_country_json(*country_data) for country_data in
+                                           self.country_data]}
         with open(os.path.join("..", "website", "data", "data.json"), "w") as f:
             json.dump(countries_json, f)
 

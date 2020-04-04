@@ -12,6 +12,7 @@ if __name__ == '__main__':
     dates = data_container.get_date_list()
     json_output = JSONOutput.get_instance()
     json_output.dates = list(dates)
+    json_output.countries = data_container.get_country_list()
     for country in data_container.get_data().T[159:160].T:  # TODO testing data_container.get_data():
         x = np.arange(dates.size)
         y = data_container.get_data()[country].values
