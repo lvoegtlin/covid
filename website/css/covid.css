@@ -132,3 +132,10 @@ main .container h2 {
 div.google-visualization-tooltip {
     width: 300px;
 }
+
+.hide-country {
+    margin-left: 15px;
+    font-size: 16px;
+    color: #155799 !important;
+    cursor: pointer;
+}

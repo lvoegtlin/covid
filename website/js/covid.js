@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-    loadReports();
-
     google.charts.load('current', {packages: ['corechart', 'controls']});
     google.charts.setOnLoadCallback(init);
 
@@ -31,22 +29,20 @@ $(document).ready(function() {
             }, 'slow');
     });
 
+    //Toggle/hide a country
+    $(document).on('click', '.hide-country', function(e) {
+        e.preventDefault();
+        var that = $(this);
+        var parent = that.parent().parent().parent();
+        var key = parent.attr('id');
+        toggleCountryData(key);
+    });
+
 });
 
-/**
- * Load Reports for all countries
- * @deprecated
- */
-function loadReports() {
-    $('.report-container').each(function () {
-        var that = $(this);
-        var src = that.data('src');
-        var url = 'reports/'+src+'.html?_t='+new Date().getTime();
-        $.get(url, function(data) {
-            that.html(data);
-        });
-    });
-}
+var initial = ['switzerland', 'germany', 'us', 'world-wide'];
+var countries = [];
+var countries_data = {};
 
 /**
  * Load data from ./data/data-example.json
@@ -54,11 +50,9 @@ function loadReports() {
  */
 function init() {
     loadTemplate(function(template) {
-        loadData(function(data) {
-            if (data && data.country_data) {
-                setupCountryList(data.country_data, template);
-                setupCountryData(data.country_data);
-            }
+        loadData(function() {
+            setupCountryList(countries_data, template);
+            toggleCountryData(initial);
         });
     });
 
@@ -72,21 +66,26 @@ function loadTemplate(cb) {
 function loadData(cb) {
     var url = 'data/data.json?_t='+new Date().getTime();
     $.get(url, function(data) {
-        cb(data);
+        $.each(data.country_data, function(i, country) {
+            country.key = country.key.replace(/ /g, '-').replace(/[()'*,]/g, '');
+            countries_data[country.key] = country;
+            countries.push({name:country.name, key:country.key});
+        });
+        cb();
     });
 }
 
 /**
  * Setup template for each country
  * @param countries
+ * @param template
  */
 function setupCountryList(countries, template) {
     var countryList = $('#country-list');
     $.each(countries, function(i, country) {
-        country.key = country.key.replace(/ /g, '-').replace(/[()'*,]/g, '');
         var templateInstance = $(template);
-        templateInstance.find('.country').attr('id', country.key);
-        templateInstance.find('.country-title').html(country.name);
+        templateInstance.attr('id', country.key);
+        templateInstance.find('.country-title').html(country.name + '<a class="hide-country">(hide)</a>');
         templateInstance.find('.collapse').attr('id', 'collapse-'+country.key);
         templateInstance.find('.filter').attr('id', 'filter-'+country.key);
         templateInstance.find('.country-graph').attr('id', 'graph-'+country.key);
@@ -103,14 +102,20 @@ function setupCountryList(countries, template) {
 /**
  * Load report data for each country
  * Initialize graphs for each country
- * @param countries
+ * @param countries_keys
  */
-function setupCountryData(countries) {
+function toggleCountryData(countries_keys) {
+    countries_keys = (Array.isArray(countries_keys)) ? countries_keys : [countries_keys];
     var countryList = $('#country-list');
-    $.each(countries, function(i, country) {
+    $.each(countries_keys, function(i, key) {
+        var country = countries_data[key];
         var countryContainer = countryList.find('#'+country.key);
-        loadGraph(countryContainer.find('.country-graph'), countryContainer.find('.country-dashboard'), country);
-        loadReport(countryContainer.find('.country-report'), country.report);
+        if (country.loaded !== true) {
+            loadGraph(countryContainer.find('.country-graph'), countryContainer.find('.country-dashboard'), country);
+            loadReport(countryContainer.find('.country-report'), country.report);
+        }
+        country.shown = !country.shown;
+        countryContainer.toggleClass('d-none');
     });
 }
 
@@ -150,9 +155,6 @@ function loadGraph(chartContainer, dashboardContainer, countryData) {
 
     var series = {};
     var data = prepareData(graph, dates);
-    if (data[0].length === 2) {
-        headers = ['original'];
-    }
     $.each(headers, function(i, headerKey) {
         var header = headerConfig[headerKey];
         chartData.addColumn(header.type, header.longName);
@@ -214,6 +216,8 @@ function loadGraph(chartContainer, dashboardContainer, countryData) {
 
     dashboard.bind(dateRangeSlider, lineChart);
     dashboard.draw(chartData);
+
+    countryData.loaded = true;
 }
 
 /**
