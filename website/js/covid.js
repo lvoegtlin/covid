@@ -4,11 +4,16 @@ $(document).ready(function() {
     google.charts.setOnLoadCallback(init);
 
     // Show Scroll to Top
+    var searchBox = $('#search-box');
+    var header = $('.page-header');
     $(window).scroll(function () {
-        if ($(this).scrollTop() > 50) {
+        var height = header.outerHeight();
+        if ($(this).scrollTop() > height) {
             $('#back-to-top').fadeIn();
+            searchBox.addClass('sticky');
         } else {
             $('#back-to-top').fadeOut();
+            searchBox.removeClass('sticky');
         }
     });
 
@@ -24,9 +29,7 @@ $(document).ready(function() {
     $('.anchor').on('click', function(e) {
         e.preventDefault();
         var target = $($(this).attr('href'));
-        $('html,body').animate({
-                scrollTop: target.offset().top
-            }, 'slow');
+        $('html,body').animate({scrollTop: target.offset().top - 80}, 'slow');
     });
 
     //Toggle/hide a country
@@ -53,16 +56,27 @@ function init() {
         loadData(function() {
             setupCountryList(countries_data, template);
             toggleCountryData(initial);
+            setupTypeahead();
         });
     });
 
 }
+
+/**
+ * Load Template for Countries
+ * @param cb
+ */
 function loadTemplate(cb) {
     var url = 'data/template.html?_t='+new Date().getTime();
     $.get(url, function(data) {
         cb(data);
     });
 }
+
+/**
+ * Load Country data from JSON
+ * @param cb
+ */
 function loadData(cb) {
     var url = 'data/data.json?_t='+new Date().getTime();
     $.get(url, function(data) {
@@ -73,6 +87,42 @@ function loadData(cb) {
         });
         cb();
     });
+}
+
+/**
+ * Setup Typeahead for country filter
+ */
+function setupTypeahead() {
+    var th = $('#search-box .typeahead');
+    th.typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },  {
+        name: 'countries',
+        source: countryMatcher(),
+        display: 'name'
+    });
+    th.bind('typeahead:select', function(e, country) {
+        toggleCountryData(country.key, country.key);
+    });
+}
+
+/**
+ * Setup Simple Matcher
+ */
+function countryMatcher() {
+    return function findMatches(q, cb) {
+        var matches, substringRegex;
+        matches = [];
+        substringRegex = new RegExp(q, 'i');
+        $.each(countries, function(i, country) {
+            if (substringRegex.test(country.name)) {
+                matches.push(country);
+            }
+        });
+        cb(matches);
+    };
 }
 
 /**
@@ -103,8 +153,9 @@ function setupCountryList(countries, template) {
  * Load report data for each country
  * Initialize graphs for each country
  * @param countries_keys
+ * @param goto
  */
-function toggleCountryData(countries_keys) {
+function toggleCountryData(countries_keys, goto) {
     countries_keys = (Array.isArray(countries_keys)) ? countries_keys : [countries_keys];
     var countryList = $('#country-list');
     $.each(countries_keys, function(i, key) {
@@ -114,8 +165,16 @@ function toggleCountryData(countries_keys) {
             loadGraph(countryContainer.find('.country-graph'), countryContainer.find('.country-dashboard'), country);
             loadReport(countryContainer.find('.country-report'), country.report);
         }
-        country.shown = !country.shown;
-        countryContainer.toggleClass('d-none');
+        //Scroll to added country
+        if (goto && goto === country.key) {
+            country.shown = true;
+            countryContainer.removeClass('d-none');
+            var target = $('#'+goto);
+            $('html,body').animate({scrollTop: target.offset().top - 80}, 'slow');
+        } else {
+            country.shown = !country.shown;
+            countryContainer.toggleClass('d-none');
+        }
     });
 }
 

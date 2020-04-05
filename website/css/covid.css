@@ -139,3 +139,54 @@ div.google-visualization-tooltip {
     color: #155799 !important;
     cursor: pointer;
 }
+
+.card-body h2:first-child {
+    margin-top: 0;
+}
+
+#search-box {
+    overflow: visible;
+    background-color: #606c71;
+    padding: 1rem;
+    z-index: 100;
+}
+#search-box .form-group {
+    margin: 0;
+}
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+.sticky + .content {
+    padding-top: 60px;
+}
+
+.twitter-typeahead {
+    width: 100%;
+}
+.tt-menu {
+    width: 100%;
+    overflow: visible;
+    z-index: 200 !important;
+    background-color: #fff;
+    border: #333 solid 1px;
+    border-top: none;
+    padding: 1rem;
+}
+.tt-suggestion {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+.tt-menu .tt-suggestion:first-child {
+    margin-top: 0;
+}
+.tt-menu .tt-suggestion:last-child {
+    margin-bottom: 0;
+}
+.tt-selectable {
+    cursor: pointer;
+}
+.tt-cursor {
+    color: #159957;
+}
