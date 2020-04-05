@@ -123,7 +123,8 @@ function setupTypeahead() {
     },  {
         name: 'countries',
         source: countryMatcher(),
-        display: 'name'
+        display: 'name',
+        limit: 10
     });
     th.bind('typeahead:select', function(e, country) {
         toggleCountryData(country.key, country.key);
