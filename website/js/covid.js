@@ -83,6 +83,7 @@ function loadData(cb) {
 function setupCountryList(countries, template) {
     var countryList = $('#country-list');
     $.each(countries, function(i, country) {
+        country.key = country.key.replace(/ /g, '-').replace(/[()'*,]/g, '');
         var templateInstance = $(template);
         templateInstance.find('.country').attr('id', country.key);
         templateInstance.find('.country-title').html(country.name);
@@ -148,13 +149,15 @@ function loadGraph(chartContainer, dashboardContainer, countryData) {
     chartData.addColumn('date', 'Date');
 
     var series = {};
+    var data = prepareData(graph, dates);
+    if (data[0].length === 2) {
+        headers = ['original'];
+    }
     $.each(headers, function(i, headerKey) {
         var header = headerConfig[headerKey];
         chartData.addColumn(header.type, header.longName);
         series[i] = header.series;
     });
-
-    var data = prepareData(graph, dates);
     chartData.addRows(data);
 
     var options = {
