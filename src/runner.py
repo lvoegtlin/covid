@@ -14,7 +14,7 @@ if __name__ == '__main__':
     json_output = JSONOutput.get_instance()
     json_output.dates = list(dates)
     json_output.countries = data_container.get_country_list()
-    for country in tqdm(data_container.get_country_list()[86:87]):
+    for country in tqdm(data_container.get_country_list()):
         x = np.arange(dates.size)
         y = data_container.get_data()[country].values
         figures = []
