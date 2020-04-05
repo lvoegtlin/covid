@@ -105,6 +105,8 @@ function setupTypeahead() {
     });
     th.bind('typeahead:select', function(e, country) {
         toggleCountryData(country.key, country.key);
+        th.typeahead('val', '');
+        th.blur();
     });
 }
 
