@@ -52,14 +52,36 @@ var countries_data = {};
  * Add an entry for each country and load data
  */
 function init() {
+    var countryList = getCountryList();
     loadTemplate(function(template) {
         loadData(function() {
             setupCountryList(countries_data, template);
-            toggleCountryData(initial);
+            toggleCountryData(countryList);
             setupTypeahead();
         });
     });
+}
 
+/**
+ * Get Countries to display from local storage
+ */
+function getCountryList() {
+    var countryListString = localStorage.getItem('countryList');
+    return countryListString ? countryListString.split('|') : initial;
+}
+
+/**
+ * Update Countries to display in local storage
+ */
+function updateCountryList() {
+    var countryList = [];
+    $.each(countries_data, function(key, country) {
+        if (country.shown) {
+            countryList.push(key);
+        }
+    });
+    var countryListString = countryList.join('|');
+    localStorage.setItem('countryList', countryListString)
 }
 
 /**
@@ -147,7 +169,11 @@ function setupCountryList(countries, template) {
         btn.data('target', '#collapse-'+country.key);
         btn.attr('data-target', '#collapse-'+country.key);
         btn.html('Report for ' + country.name);
-        countryList.append(templateInstance);
+        if (country.key === 'switzerland') {
+            countryList.prepend(templateInstance);
+        } else {
+            countryList.append(templateInstance);
+        }
     });
 }
 
@@ -178,6 +204,7 @@ function toggleCountryData(countries_keys, goto) {
             countryContainer.toggleClass('d-none');
         }
     });
+    updateCountryList();
 }
 
 /**
@@ -195,7 +222,7 @@ function loadGraph(chartContainer, dashboardContainer, countryData) {
             type: 'number',
             longName: 'Original Data',
             shortName: 'Original',
-            series: {color: '#000000', pointShape: 'circle', pointSize: 10, lineWidth: 0}
+            series: {color: '#000000', pointShape: 'circle', pointSize: 6, lineWidth: 0}
         },
         logistic: {
             type: 'number',
